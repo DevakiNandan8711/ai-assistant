@@ -31,7 +31,7 @@ def ask():
     try:
         client = get_client()
         response = client.chat.completions.create(
-            model="gemma2-9b-it",
+            model="llama-3.1-8b-instant",
             messages=[
                 {"role": "system", "content": "Act like a helpful personal assistant"},
                 {"role": "user", "content": question}
@@ -51,7 +51,7 @@ def summarize():
     try:
         client = get_client()
         response = client.chat.completions.create(
-            model="gemma2-9b-it",
+            model="llama-3.1-8b-instant",
             messages=[
                 {"role": "system", "content": "Act like a helpful personal assistant"},
                 {"role": "user", "content": f"Summarize this text: {email_text}"}
