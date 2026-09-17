@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, jsonify
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
-from openrouter import OpenRouter
 
 load_dotenv()
 MY_API_KEY = os.getenv("MY_API_KEY")
