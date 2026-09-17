@@ -16,7 +16,7 @@ def get_client():
         raise ValueError("MY_API_KEY is missing. Add it to your .env file.")
     return OpenAI(
         api_key=MY_API_KEY,
-        base_url="https://api.groq.com/openai/v1"
+        base_url="https://openrouter.ai/api/v1"
     )
 
 
@@ -31,7 +31,7 @@ def ask():
     try:
         client = get_client()
         response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model="google/gemma-2-9b-it:free",
             messages=[
                 {"role": "system", "content": "Act like a helpful personal assistant"},
                 {"role": "user", "content": question}
@@ -51,7 +51,7 @@ def summarize():
     try:
         client = get_client()
         response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model="google/gemma-2-9b-it:free",
             messages=[
                 {"role": "system", "content": "Act like a helpful personal assistant"},
                 {"role": "user", "content": f"Summarize this text: {email_text}"}
