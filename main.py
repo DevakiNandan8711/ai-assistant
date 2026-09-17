@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
-
+from openrouter import OpenRouter
 
 load_dotenv()
 MY_API_KEY = os.getenv("MY_API_KEY")
@@ -31,7 +31,7 @@ def ask():
     try:
         client = get_client()
         response = client.chat.completions.create(
-            model="google/gemma-2-9b-it:free",
+            model="google/gemma-4-31b-it:free",
             messages=[
                 {"role": "system", "content": "Act like a helpful personal assistant"},
                 {"role": "user", "content": question}
@@ -51,7 +51,7 @@ def summarize():
     try:
         client = get_client()
         response = client.chat.completions.create(
-            model="google/gemma-2-9b-it:free",
+            model="google/gemma-4-31b-it:free",
             messages=[
                 {"role": "system", "content": "Act like a helpful personal assistant"},
                 {"role": "user", "content": f"Summarize this text: {email_text}"}
