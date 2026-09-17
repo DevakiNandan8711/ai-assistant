@@ -28,8 +28,8 @@ def hello_world():
 @app.route("/ask", methods=["POST"])
 def ask():
     question = request.form.get("question")
-    client = get_client()
     try:
+        client = get_client()
         response = client.chat.completions.create(
             model="gemma2-9b-it",
             messages=[
@@ -48,8 +48,8 @@ def ask():
 @app.route("/summarize", methods=["POST"])
 def summarize():
     email_text = request.form.get("email")
-    client = get_client()
     try:
+        client = get_client()
         response = client.chat.completions.create(
             model="gemma2-9b-it",
             messages=[
