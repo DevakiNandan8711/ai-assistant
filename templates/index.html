@@ -49,7 +49,11 @@
             });
 
             let data = await res.json();
-            document.getElementById("answer").innerText = data.response;
+            if (data.error) {
+                document.getElementById("answer").innerText = "Error: " + data.error;
+            } else {
+                document.getElementById("answer").innerText = data.response;
+            }
 
             loading.style.display = "none";   // hide loader
         };
@@ -67,7 +71,11 @@
             });
 
             let data = await res.json();
-            document.getElementById("summary").innerText = data.response;
+            if (data.error) {
+                document.getElementById("summary").innerText = "Error: " + data.error;
+            } else {
+                document.getElementById("summary").innerText = data.response;
+            }
 
             loading.style.display = "none";   // hide loader
         };
