@@ -5,11 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Personal Assistant</title>
+    <!-- Browser Tab Icon (Favicon) -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="alternate icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
 </head>
 
 <body>
-    <h1 class="main-heading">AI Personal Assistant</h1>
+    <h1 class="main-heading">
+        <img src="{{url_for('static', filename='favicon.svg')}}" alt="AI Icon" class="header-icon">
+        <span>AI Personal Assistant</span>
+    </h1>
 
     <div class="container">
 
