@@ -19,6 +19,42 @@ def get_client():
     )
 
 
+def get_model_candidates():
+    """Return ordered list of models to try, starting from DEFAULT_MODEL in .env with fallback options."""
+    primary = os.getenv("DEFAULT_MODEL", "openrouter/free").strip()
+    fallbacks = [
+        primary,
+        "openrouter/free",
+        "nvidia/nemotron-3.5-lightning:free",
+        "google/gemma-4-26b-a4b-it:free",
+    ]
+    # Deduplicate while preserving priority order
+    seen = set()
+    return [m for m in fallbacks if m and not (m in seen or seen.add(m))]
+
+
+def generate_completion(client, messages, temperature=0.7, max_tokens=512):
+    """Attempt chat completion across available models with automatic fallback on rate-limits (429)."""
+    models = get_model_candidates()
+    last_error = None
+    for model in models:
+        try:
+            response = client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens
+            )
+            content = response.choices[0].message.content
+            if content and content.strip():
+                return content.strip()
+        except Exception as e:
+            last_error = e
+            print(f"[Model Fallback] Model '{model}' failed: {e}. Trying next available model...")
+            continue
+    raise last_error or RuntimeError("All available AI models failed to respond. Please try again shortly.")
+
+
 @app.route("/")
 def hello_world():
     return render_template("index.html")
@@ -27,10 +63,12 @@ def hello_world():
 @app.route("/ask", methods=["POST"])
 def ask():
     question = request.form.get("question")
+    if not question:
+        return jsonify({"error": "Please provide a question."}), 400
     try:
         client = get_client()
-        response = client.chat.completions.create(
-            model="google/gemma-4-31b-it:free",
+        answer = generate_completion(
+            client=client,
             messages=[
                 {"role": "system", "content": "Act like a helpful personal assistant"},
                 {"role": "user", "content": question}
@@ -38,7 +76,6 @@ def ask():
             temperature=0.7,
             max_tokens=512
         )
-        answer = response.choices[0].message.content.strip()
         return jsonify({"response": answer}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -47,10 +84,12 @@ def ask():
 @app.route("/summarize", methods=["POST"])
 def summarize():
     email_text = request.form.get("email")
+    if not email_text:
+        return jsonify({"error": "Please provide text to summarize."}), 400
     try:
         client = get_client()
-        response = client.chat.completions.create(
-            model="google/gemma-4-31b-it:free",
+        summary = generate_completion(
+            client=client,
             messages=[
                 {"role": "system", "content": "Act like a helpful personal assistant"},
                 {"role": "user", "content": f"Summarize this text: {email_text}"}
@@ -58,7 +97,6 @@ def summarize():
             temperature=0.3,
             max_tokens=512
         )
-        summary = response.choices[0].message.content.strip()
         return jsonify({"response": summary}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
